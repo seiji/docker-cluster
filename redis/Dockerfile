@@ -15,13 +15,15 @@ RUN mkdir -p /etc/redis
 RUN curl -Lso /tmp/redis-"${REDIS_VERSION}".tar.gz https://github.com/antirez/redis/archive/"${REDIS_VERSION}".tar.gz
 RUN tar zxf /tmp/redis-"${REDIS_VERSION}".tar.gz -C /usr/local/src/
 RUN cd /usr/local/src/redis-"${REDIS_VERSION}" && make -j4 MALLOC=jemalloc && make install
-RUN cp /usr/local/src/redis-"${REDIS_VERSION}"/src/redis-trib.rb /tmp/redis-trib.rb
+RUN ln -s /usr/local/src/redis-"${REDIS_VERSION}"/src/redis-trib.rb /usr/local/bin/redis-trib.rb
 
 ENV PATH /usr/local/redis/bin:$PATH
 
 ADD ./redis.conf /etc/redis/redis.conf
 ADD ./bootstrap.sh /tmp/bootstrap.sh
 RUN chmod +x /tmp/bootstrap.sh
+ADD ./redis-proto.sh /usr/local/bin/redis-proto.sh
+RUN chmod +x /usr/local/bin/redis-proto.sh
 
 VOLUME ["/var/lib/redis"]
 EXPOSE 6379 16379
